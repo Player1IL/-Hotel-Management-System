@@ -2,6 +2,8 @@
 #include<iostream>
 #include<fstream>
 #include<string>
+#include<vector>
+#include <algorithm>
 using namespace std;
 
     struct Name              // structure for naming in program
@@ -11,6 +13,14 @@ using namespace std;
       char date[20];
       int room;
       char cnic[20],mob[20];
+    };
+
+    struct Room
+    {
+        int room_number;
+        int room_type;
+        Room *next;
+        Room *prev;
     };
       
        //\\Functions prototyping//\/\\
@@ -23,6 +33,14 @@ using namespace std;
        void help();                                     //for helping the user to operate the application
        void about();                                   //for about the program
        void del_resdata();                            // in order delete
+       void insert_front(struct Room**, int, int);
+       void insert_After(struct Room*, int, int);
+       void insert_end(struct Room**, int, int);
+       void displayList(struct Room*);
+       bool check_room_status();
+       void add_rooms();
+
+
        
 //------------------------.>//
 
@@ -33,6 +51,7 @@ int main()
     int choice;
     char again;
     char x[20];
+    struct Room* head = NULL;
     cout<<endl;
     cout<<"         *                           *    "<<endl;   
     cout<<"      **                               **   "<<endl;
@@ -40,114 +59,125 @@ int main()
     cout<<"      **                               **  "<<endl;
     cout<<"        *                             *   "<<endl;
     cout<<endl;                                                   
-    
+
+
     cout<<"______________________________"<<endl;
     cout<<endl;
-    do
+    while (check_room_status() == false) {
+        cout << "No rooms found, beginning hotel construction..." << endl;
+        add_rooms();
+    }
+    ifstream inroomsfile("infoRooms.txt");
+    int number, type;
+    while (inroomsfile >> number >> type)
     {
-    cout<<"Welcome to the Main Menu "<<endl;
-    cout<<endl;
-    cout<<"Press 1 to Reserve a room. "<<endl; 
-    cout<<endl;
-    cout<<"Press 2 to see the vacant rooms. "<<endl;                        
-    cout<<endl;
-    cout<<"Press 3 to check out a room. "<<endl;
-    cout<<endl;
-    cout<<"Press 4 to see the history of reserved rooms. "<<endl;
-    cout<<endl;
-    cout<<"Press 5 to Delete the Reservation data. "<<endl;
-    cout<<endl;
-    cout<<"Press 6 to see about the Application. "<<endl;
-    cout<<endl;
-    cout<<"Press 7 for help. "<<endl;
-    cout<<endl;
-    cout<<"Press 0 to Exit application. "<<endl;
-    cout<<endl;
-    cout<<endl;
-    cout<<"Enter Here_: ";
-    cin>>a;
-    cout<<"_____________________________________"<<endl;
-    cout<<endl;
-    switch(a)
-    {
-    cout<<"________________________________________"<<endl;
-    case 0:
-    break;
-    case 1:
-         cout<<"   *                                 *"<<endl;
-         cout<<"  ** Welcome to the Reservation Menu **"<<endl;
-         cout<<"   *                                 *"<<endl;
-         cout<<endl;
-         cout<<endl;
-         customer_reserve();     // funtion calling
-         break;
-         case 2:
-         cout<<"   *                             *"<<endl;
-         cout<<"  ** Welcome to the Vacant Rooms **"<<endl;
-         cout<<"   *                             *"<<endl;
-         cout<<endl;
-         cout<<endl;
-         vacant_rooms();    ///funtion calling
-         break;
-         case 3:
-         cout<<" *                                 *"<<endl;
-         cout<<"** Welcome to the User Total Menu  **"<<endl;
-         cout<<" *                                 *"<<endl;
-         cout<<endl;
-         cout<<endl;
-         user_total();    //function calling   
-          break;          
-         case 4:
-         cout<<"               *                                 *"<<endl;
-         cout<<"              ** Welcome to the History Menu     **"<<endl;
-         cout<<"               *                                 *"<<endl;
-         cout<<endl;
-         cout<<endl;
-                        
-         check();    //function calling           
-         break;           
-         case 5:
-         cout<<"        *                                                           *"<<endl;
-         cout<<"    ** Welcome to Delete Reservation data function **"<<endl;
-         cout<<"        *                                             *"<<endl;
-         cout<<endl;
-         cout<<endl;
-         del_resdata();    //function calling
-         break;         
-         case 6:
-         cout<<"      *                       *"<<endl;
-         cout<<"   ** About the Application **"<<endl;
-         cout<<"      *                       *"<<endl;
-         cout<<endl;
-         cout<<endl;
-         about();     //function calling
-         break;                     
-         case 7:
-         cout<<"     *                     *"<<endl;
-         cout<<"   ** Welcome to the Help **"<<endl;
-         cout<<"      *                     *"<<endl;
-         cout<<endl;
-         cout<<endl;
-         help();    //function calling
-         break;
-  default:
-                 cout<<"you have enter an invalid Choice "<<endl;
-                 cout<<endl;
-                 }
-cout<<"Press 1 to go back into MAIN Menu or 0 to terminate the program: ";                    
-cin>>again;
-cout<<"___________________________________"<<endl;
-cout<<endl;
-}
-while (again=='1');   
-cout<<"Thankyou! for using Hotel Reservation application."<<endl;
-cout<<"Have a nice day! "<<endl;
-cout<<endl; 
-cout<<"Copyright(C) 2017. \n this is developed by deepak yadav"<<endl<<endl;
-cout<<"_________________________________________"<<endl;
+        insert_end(&head, number, type);
+    }
+    displayList(head);
+    cout << endl;
+    inroomsfile.close();
 
-     system ("pause");
-     }
+    do {
+        cout << "Welcome to the Main Menu " << endl;
+        cout << endl;
+        cout << "Press 1 to Reserve a room. " << endl;
+        cout << endl;
+        cout << "Press 2 to see the vacant rooms. " << endl;
+        cout << endl;
+        cout << "Press 3 to check out a room. " << endl;
+        cout << endl;
+        cout << "Press 4 to see the history of reserved rooms. " << endl;
+        cout << endl;
+        cout << "Press 5 to Delete the Reservation data. " << endl;
+        cout << endl;
+        cout << "Press 6 to see about the Application. " << endl;
+        cout << endl;
+        cout << "Press 7 for help. " << endl;
+        cout << endl;
+        cout << "Press 0 to Exit application. " << endl;
+        cout << endl;
+        cout << endl;
+        cout << "Enter Here_: ";
+        cin >> a;
+        cout << "_____________________________________" << endl;
+        cout << endl;
+        switch (a) {
+            cout << "________________________________________" << endl;
+            case 0:
+                break;
+            case 1:
+                cout << "   *                                 *" << endl;
+                cout << "  ** Welcome to the Reservation Menu **" << endl;
+                cout << "   *                                 *" << endl;
+                cout << endl;
+                cout << endl;
+                customer_reserve();     // funtion calling
+                break;
+            case 2:
+                cout << "   *                             *" << endl;
+                cout << "  ** Welcome to the Vacant Rooms **" << endl;
+                cout << "   *                             *" << endl;
+                cout << endl;
+                cout << endl;
+                vacant_rooms();    ///funtion calling
+                break;
+            case 3:
+                cout << " *                                 *" << endl;
+                cout << "** Welcome to the User Total Menu  **" << endl;
+                cout << " *                                 *" << endl;
+                cout << endl;
+                cout << endl;
+                user_total();    //function calling
+                break;
+            case 4:
+                cout << "               *                                 *" << endl;
+                cout << "              ** Welcome to the History Menu     **" << endl;
+                cout << "               *                                 *" << endl;
+                cout << endl;
+                cout << endl;
+                check();    //function calling
+                break;
+            case 5:
+                cout << "        *                                                           *" << endl;
+                cout << "    ** Welcome to Delete Reservation data function **" << endl;
+                cout << "        *                                             *" << endl;
+                cout << endl;
+                cout << endl;
+                del_resdata();    //function calling
+                break;
+            case 6:
+                cout << "      *                       *" << endl;
+                cout << "   ** About the Application **" << endl;
+                cout << "      *                       *" << endl;
+                cout << endl;
+                cout << endl;
+                about();     //function calling
+                break;
+            case 7:
+                cout << "     *                     *" << endl;
+                cout << "   ** Welcome to the Help **" << endl;
+                cout << "      *                     *" << endl;
+                cout << endl;
+                cout << endl;
+                help();    //function calling
+                break;
+            default:
+                cout << "you have enter an invalid Choice " << endl;
+                cout << endl;
+            }
+            cout << "Press 1 to go back into MAIN Menu or 0 to terminate the program: ";
+            cin >> again;
+            cout << "___________________________________" << endl;
+            cout << endl;
+        } while (again == '1');
+        cout << "Thankyou! for using Hotel Reservation application." << endl;
+        cout << "Have a nice day! " << endl;
+        cout << endl;
+        cout << "Copyright(C) 2017. \n this is developed by deepak yadav" << endl << endl;
+        cout << "_________________________________________" << endl;
+
+        system("pause");
+    }
 //....................................................................//
                         
 //....................................................................//
@@ -525,6 +555,120 @@ cout<<"_____________________________________________"<<endl;
 while (again=='Y' || again=='y');
 deletefile.close();
 }
+void insert_front(struct Room** head, int number, int type)
+{
+    struct Room* newRoom = new Room;
+    newRoom->room_number = number;
+    newRoom->room_type = type;
+    newRoom->next = (*head);
+    newRoom->prev = NULL;
+    if ((*head) != NULL)
+        (*head)->prev = newRoom;
+}
+void insert_After(struct Room* prev_room, int number, int type)
+{
+    if (prev_room == NULL) {
+        cout<<"Previous node is required , it cannot be NULL";
+        return;
+    }
+    struct Room* newRoom = new Room;
+    newRoom->room_number = number;
+    newRoom->room_type = type;
+    newRoom->next = prev_room->next;
+    prev_room->next = newRoom;
+    newRoom->prev = prev_room;
+    if (newRoom->next != NULL)
+        newRoom->next->prev = newRoom;
+}
+void insert_end(struct Room** head, int number, int type)
+{
+    struct Room* newRoom = new Room;
+    struct Room* last = *head;
+    newRoom->room_number = number;
+    newRoom->room_type = type;
+    newRoom->next = NULL;
+    if (*head == NULL) {
+        newRoom->prev = NULL;
+        *head = newRoom;
+        return;
+    }
+    while (last->next != NULL)
+        last = last->next;
+        last->next = newRoom;
+        newRoom->prev = last;
+        return;
+}
+void displayList(struct Room* room) {
+    struct Room* last;
+    while (room != NULL) {
+        cout << "[" << room->room_number << "," << room->room_type << "]" << "<==>";
+        last = room;
+        room = room->next;
+    }
+    if(room == NULL)
+        cout<<"NULL";
+}
+bool check_room_status()
+{
+    ifstream infile;
+    infile.open("infoRooms.txt");
+    if (infile) {
+        infile.seekg(0, ios::end);
+        if (infile.tellg() == 0)
+            return false;
+        else
+            return true;
+    }
+    else
+        return false;
+}
+void add_rooms()
+{
+    ofstream infile("infoRooms.txt");
+    vector<int> rooms;
+    int n, number, type;
+    bool m = true;
+    while (m)
+    {
+        cout << "1. Add room" << endl;
+        cout << "2. End" << endl;
+        cout << "Choose your option: ";
+        cin >> n;
+        switch (n)
+        {
+            case 1:
+                cout << "Enter room number: ";
+                cin >> number;
+                if (rooms.empty() == false)
+                    while (find(rooms.begin(), rooms.end(), number) != rooms.end())
+                    {
+                        cout << "Room number already exists" << endl;
+                        cout << "Enter room number: ";
+                        cin >> number;
+                    }
+                cout << endl;
+                cout << "Enter room type (Single: 1, Double: 2, Suit: 3): ";
+                cin >> type;
+                cout << endl;
+                while (type > 3 || type < 1)
+                {
+                    cout << "Incorrect type!" << endl;
+                    cout << "Enter room type (Single: 1, Double: 2, Suit: 3): ";
+                    cin >> type;
+                }
+                rooms.push_back(number);
+                infile << number << " " << type << endl;
+                break;
+            case 2:
+                m = false;
+                break;
+            default:
+                cout << "Invalid option, try again!" << endl;
+        }
+    }
+    infile.close();
+    rooms.clear();
+}
 void about()
 {
              cout<<"About the Application"<<endl;
@@ -557,7 +701,7 @@ void help()
              cout<<"the program will not work properly and will terminate.Follow the  "<<endl;
              cout<<"displayed on the screen.Select the proper option to operate "<<endl;
              cout<<"instructions the application.Goodluck! "<<endl;
-              cout<<"for more detais just contact on given email address\n\n";
+             cout<<"for more detais just contact on given email address\n\n";
              cout<<"deepakyadav02121998@gmail.com\n";
              cout<<"thanks for be here\n";
              cout<<endl;
