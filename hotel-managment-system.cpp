@@ -21,7 +21,7 @@ using namespace std;
         int room_type;
         Room *next;
         Room *prev;
-        bool reserved= false;
+        bool reserved = false;
     };
       
        //\\Functions prototyping//\/\\
@@ -37,11 +37,12 @@ using namespace std;
        void insert_end(struct Room**, int, int, bool); //adding to the end of the linked list
        void displayList(struct Room*); //print list
        bool check_room_status(); //Check for existence of log
-       void add_rooms(); // Create log file for the first time (first time the application starts or log does not exist).
-       bool check_availability(struct Room*, int);//check if a room is available for the public.
+       void add_rooms(); //Create log file for the first time (first time the application starts or log does not exist).
+       bool check_availability(struct Room*, int); //check if a room is available for the public.
        void reserve_room(struct Room*, int); //changing the room reservation status.
-       void log_update(struct Room*);//updates the log when needed.
-       Room* get_room(struct Room*, int);//get a specific room(node) from list when needed.
+       void log_update(struct Room*); //updates the log when needed.
+       Room* get_room(struct Room*, int); //get a specific room(node) from list when needed.
+       int room_damages(); // calc room damages to user_total func
 
        
 //------------------------.>//
@@ -196,7 +197,7 @@ void user_total(struct Room* head)   //funtion definition  of function user_tota
     int c=1000;
     int single= 3000;
     int doubl=4500;
-    int suit=6000;
+    int suite=6000;
     int time=24;
     int service=300;
     do
@@ -218,10 +219,10 @@ void user_total(struct Room* head)   //funtion definition  of function user_tota
          cout<<"You have Selected single room. "<<endl<<endl;
          cout<<" For How many days did the guest stayed: ";
          cin>>days;
-         
-          cout<<" Press Y for A/c and N for without A/c: ";
+         total1 += room_damages();
+         cout<<" Press Y for A/c and N for without A/c: ";
          cin>>AC;
-         cout<<endl; 
+         cout<<endl;
         if (AC == 'Y' || AC == 'y')
 {
          total1 =(c+single+time+service)*days;
@@ -243,6 +244,7 @@ void user_total(struct Room* head)   //funtion definition  of function user_tota
          cout<<" For How many days did the guest stayed: ";
          cin>>days;
          cout<<endl;
+         total1 += room_damages();
         cout<<" Press Y for A/c and N for without A/c: ";
          cin>>AC;
          cout<<endl; 
@@ -263,24 +265,25 @@ cout<<endl;
 }      
          break;
          case 3:
-         cout<<"You Have Selected Suit. "<<endl;
+         cout<<"You Have Selected Suite. "<<endl;
          cout<<endl;
          cout<<" For How many days did the guest stayed: ";
          cin>>days;
-         cout<<endl;      
+         cout<<endl;
+         total1 += room_damages();
          cout<<" Press Y for A/c and N for without A/c: ";
          cin>>AC;
          cout<<endl; 
         if (AC == 'Y' || AC == 'y')
 {
-         total1 =(c+suit+time+service)*days;
+         total1 = (c + suite + time + service) * days;
           cout<<"Your Total Total bill + service tax = ("<<total1<<" Rs.)"<<endl;
           cout<<endl;
            cout<<"_______________________________________"<<endl; 
 }       
          else if (AC == 'N' || AC == 'n')
  {        
-         total1=(suit+time+service) * days;
+         total1= (suite + time + service) * days;
           cout<<"Your Total Total bill + service tax = ("<<total1<<" Rs.)"<<endl;
           
         cout<<endl; 
@@ -414,7 +417,7 @@ void vacant_rooms()    //function definition
     cout<<endl;
     cout<<"Press 2 to See the list of Double Rooms. "<<endl;
     cout<<endl;
-    cout<<"Press 3 to See the list of Suits. "<<endl;
+    cout<<"Press 3 to See the list of Suites. "<<endl;
     cout<<endl;
     cout<<"Enter Your Choice Here_: ";
     cin>>see;
@@ -646,13 +649,13 @@ void add_rooms()///function definition
                         cin >> number;
                     }
                 cout << endl;
-                cout << "Enter room type (Single: 1, Double: 2, Suit: 3): ";
+                cout << "Enter room type (Single: 1, Double: 2, Suite: 3): ";
                 cin >> type;
                 cout << endl;
                 while (type > 3 || type < 1)
                 {
                     cout << "Incorrect type!" << endl;
-                    cout << "Enter room type (Single: 1, Double: 2, Suit: 3): ";
+                    cout << "Enter room type (Single: 1, Double: 2, Suite: 3): ";
                     cin >> type;
                 }
                 rooms.push_back(number);
@@ -710,6 +713,32 @@ Room* get_room(struct Room* head,int wanted_room) ///function definition
         last = head;
         head = head->next;
     }
+}
+int room_damages()
+{
+    int sum = 0, objects;
+    char object, obj;
+    cout << "Are there any broken objects? (Y/N):";
+    cin >> object;
+    if (object == 'Y' || object == 'y')
+    {
+        cout << endl << "Does the TV work? (Y/N):";
+        cin >> obj;
+        if (obj == 'N' || obj == 'n')
+            sum += 1500;
+        cout << endl << "Is the bed intact? (Y/N):";
+        cin >> obj;
+        if (obj == 'N' || obj == 'n')
+            sum += 3000;
+        cout << endl << "Are there any appliances broken? (Y/N):";
+        cin >> obj;
+        if (obj == 'Y' || obj == 'y') {
+            cout << endl << "How many?:";
+            cin >> objects;
+            sum += 200 * objects;
+        }
+    }
+    return sum;
 }
 void about()
 {
