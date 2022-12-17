@@ -26,7 +26,7 @@ using namespace std;
       
        //\\Functions prototyping//\/\\
             
-       void vacant_rooms();                //for vacant rooms|
+       void vacant_rooms();                //for vacant rooms
        void customer_reserve(struct Room*);           //for reservation  |
        void check();                    //for the guest history
        void user_total(struct Room*);                                //for user total on the time checkout
