@@ -21,25 +21,27 @@ using namespace std;
         int room_type;
         Room *next;
         Room *prev;
+        bool reserved= false;
     };
       
        //\\Functions prototyping//\/\\
             
        void vacant_rooms();                //for vacant rooms|
-       void customer_reserve();           //for reservation  |
+       void customer_reserve(struct Room*);           //for reservation  |
        void check();                    //for the guest history
-       void user_total();                                //for user total on the time checkout
+       void user_total(struct Room*);                                //for user total on the time checkout
        void loading();                                   // for loading bar
        void help();                                     //for helping the user to operate the application
        void about();                                   //for about the program
        void del_resdata();                            // in order delete
-       void insert_front(struct Room**, int, int);
-       void insert_After(struct Room*, int, int);
-       void insert_end(struct Room**, int, int);
-       void displayList(struct Room*);
-       bool check_room_status();
-       void add_rooms();
-
+       void insert_end(struct Room**, int, int, bool); //adding to the end of the linked list
+       void displayList(struct Room*); //print list
+       bool check_room_status(); //Check for existence of log
+       void add_rooms(); // Create log file for the first time (first time the application starts or log does not exist).
+       bool check_availability(struct Room*, int);//check if a room is available for the public.
+       void reserve_room(struct Room*, int); //changing the room reservation status.
+       void log_update(struct Room*);//updates the log when needed.
+       Room* get_room(struct Room*, int);//get a specific room(node) from list when needed.
 
        
 //------------------------.>//
@@ -69,12 +71,11 @@ int main()
     }
     ifstream inroomsfile("infoRooms.txt");
     int number, type;
-    while (inroomsfile >> number >> type)
+    bool reserve;
+    while (inroomsfile >> number >> type >> reserve)
     {
-        insert_end(&head, number, type);
+        insert_end(&head, number, type, reserve);
     }
-    displayList(head);
-    cout << endl;
     inroomsfile.close();
 
     do {
@@ -109,9 +110,11 @@ int main()
                 cout << "   *                                 *" << endl;
                 cout << "  ** Welcome to the Reservation Menu **" << endl;
                 cout << "   *                                 *" << endl;
+                cout << "  **        Available Rooms:         **"  <<endl;
+                displayList(head);
                 cout << endl;
                 cout << endl;
-                customer_reserve();     // funtion calling
+                customer_reserve(head);     // funtion calling
                 break;
             case 2:
                 cout << "   *                             *" << endl;
@@ -125,9 +128,11 @@ int main()
                 cout << " *                                 *" << endl;
                 cout << "** Welcome to the User Total Menu  **" << endl;
                 cout << " *                                 *" << endl;
+                cout << "**        Available Rooms:         **"<<endl;
+                displayList(head);
                 cout << endl;
                 cout << endl;
-                user_total();    //function calling
+                user_total(head);    //function calling
                 break;
             case 4:
                 cout << "               *                                 *" << endl;
@@ -169,6 +174,8 @@ int main()
             cin >> again;
             cout << "___________________________________" << endl;
             cout << endl;
+            if(again == '0')
+                log_update(head);
         } while (again == '1');
         cout << "Thankyou! for using Hotel Reservation application." << endl;
         cout << "Have a nice day! " << endl;
@@ -181,9 +188,10 @@ int main()
 //....................................................................//
                         
 //....................................................................//
-void user_total()   //funtion definition  of function user_total
+void user_total(struct Room* head)   //funtion definition  of function user_total
 {
      int choice,days,total1;
+     Room* the_room;
     char AC,again;
     int c=1000;
     int single= 3000;
@@ -193,16 +201,18 @@ void user_total()   //funtion definition  of function user_total
     int service=300;
     do
     {
-    cout<<"Which kind of Room did the guest stayed in?  "<<endl<<endl;
-               cout<<" 1.Single Rooms "<<endl<<endl;
-               cout<<" 2.Double Rooms "<<endl<<endl;
-               cout<<" 3.Suits "<<endl<<endl;
-    
-    cout<<"Select 1,2 or 3 . "<<endl<<endl;
-    cout<<"Enter Your CHoice Here_: ";
+    cout<<"What was the room number you stayed in?  "<<endl<<endl;
     cin>>choice;
+    the_room=get_room(head,choice);
+    if(!the_room)
+    {
+        cout<<"Invalid room : Either not existent or already vacant"<<endl;
+        break;
+    }
+    the_room->reserved=false;
+
     cout<<"__________________________________"<<endl;
-    switch(choice)
+    switch(the_room->room_type)
     {
     case 1:
          cout<<"You have Selected single room. "<<endl<<endl;
@@ -292,13 +302,14 @@ cout<<endl;
         //....................................................................//
                         
       //....................................................................//
-        
-        void customer_reserve()    //function definition 
+
+      void customer_reserve(struct Room* head)    //function definition
 {
 
               Name guest;             // guest is the name structure
               Name guest2;
-              char choicedo;       //for enter more data 
+              char choicedo;       //for enter more data
+              bool check_res=false;
 
     do 
     { 
@@ -311,7 +322,17 @@ if(!file)
          }
          
     cout<<"Enter The Room number to be Reserved: ";
-    cin>>guest.room;
+    do 
+    {
+        cin >> guest.room;
+        check_res = check_availability(head, guest.room);
+        if (!check_res)
+        {
+            cout << "Please choose a different room since the one chosen is not available." << endl;
+            cout<<"Enter The Room number to be Reserved:";
+        }
+
+    }while(!check_res);
     cin.ignore();                       
     cout<<endl;
     cout<<"Enter Guest's First Name: ";
@@ -335,42 +356,45 @@ if(!file)
     cout<<endl;
   cin>>a;
    if(a==1)
-       {
-    cout<<endl;
-    file<<" Guests Info"<<endl;
-    cout<<endl;
-    file<<"------------------------------------------------------------"<<endl;
-               file<<endl;
-               file<<"              Reservation Data of Room no.: "<<guest.room<<endl;
-               file<<endl;
-               file<<"The Name of the Guest is: "<<guest.first<<" "<<guest.last<<endl;
-               file<<endl;
-               file<<"Mobile No.: +"<<guest.mob<<endl;
-               file<<endl;
-               file<<"Name of Manager in Charge is: "<<guest2.first<<endl;
-               file<<endl;
-               file<<"Date: "<<guest.date<<endl;
-               file<<endl;
-    file<<endl;  
-    file<<"------------------------------------------------------------"<<endl;
-    file.close(); 
-    cout<<"Record Saved..."<<endl;
-    cout<<"__________________________________"<<endl;
-    cout<<endl;
-}         
-         else
- {        
-         cout<<"Record Was Not Saved"<<endl;
-          cout<<"____________________________________"<<endl;
-         cout<<endl;
+   {
+        cout<<endl;
+        file<<" Guests Info"<<endl;
+        cout<<endl;
+        file<<"------------------------------------------------------------"<<endl;
+                   file<<endl;
+                   file<<"              Reservation Data of Room no.: "<<guest.room<<endl;
+                   file<<endl;
+                   file<<"The Name of the Guest is: "<<guest.first<<" "<<guest.last<<endl;
+                   file<<endl;
+                   file<<"Mobile No.: +"<<guest.mob<<endl;
+                   file<<endl;
+                   file<<"Name of Manager in Charge is: "<<guest2.first<<endl;
+                   file<<endl;
+                   file<<"Date: "<<guest.date<<endl;
+                   file<<endl;
+
+        file<<endl;
+        file<<"------------------------------------------------------------"<<endl;
+        file.close();
+        reserve_room(head,guest.room);
+        cout<<"Record Saved..."<<endl;
+        cout<<"__________________________________"<<endl;
+        cout<<endl;
+
+    }
+   else
+        {
+             cout<<"Record Was Not Saved"<<endl;
+              cout<<"____________________________________"<<endl;
+             cout<<endl;
         }
          cout<<"Enter Y To input an other data or Enter N to Exit: ";
          cin>>choicedo;
          cout<<"_____________________________________"<<endl;
          cout<<endl;
-         }
+    }
          while (choicedo=='y' || choicedo=='Y');  //to enter more data
- //}          
+
 }
          
          
@@ -555,37 +579,13 @@ cout<<"_____________________________________________"<<endl;
 while (again=='Y' || again=='y');
 deletefile.close();
 }
-void insert_front(struct Room** head, int number, int type)
-{
-    struct Room* newRoom = new Room;
-    newRoom->room_number = number;
-    newRoom->room_type = type;
-    newRoom->next = (*head);
-    newRoom->prev = NULL;
-    if ((*head) != NULL)
-        (*head)->prev = newRoom;
-}
-void insert_After(struct Room* prev_room, int number, int type)
-{
-    if (prev_room == NULL) {
-        cout<<"Previous node is required , it cannot be NULL";
-        return;
-    }
-    struct Room* newRoom = new Room;
-    newRoom->room_number = number;
-    newRoom->room_type = type;
-    newRoom->next = prev_room->next;
-    prev_room->next = newRoom;
-    newRoom->prev = prev_room;
-    if (newRoom->next != NULL)
-        newRoom->next->prev = newRoom;
-}
-void insert_end(struct Room** head, int number, int type)
+void insert_end(struct Room** head, int number, int type,bool reserve) ///function definition
 {
     struct Room* newRoom = new Room;
     struct Room* last = *head;
     newRoom->room_number = number;
     newRoom->room_type = type;
+    newRoom->reserved = reserve;
     newRoom->next = NULL;
     if (*head == NULL) {
         newRoom->prev = NULL;
@@ -598,17 +598,16 @@ void insert_end(struct Room** head, int number, int type)
         newRoom->prev = last;
         return;
 }
-void displayList(struct Room* room) {
+void displayList(struct Room* room) ///function definition
+        {
     struct Room* last;
     while (room != NULL) {
-        cout << "[" << room->room_number << "," << room->room_type << "]" << "<==>";
+        cout << "         [" << "Room:" << room->room_number << "," << "Type:" << room->room_type <<"," << "Status:" << room->reserved<<"]" <<endl;
         last = room;
         room = room->next;
     }
-    if(room == NULL)
-        cout<<"NULL";
 }
-bool check_room_status()
+bool check_room_status() ///function definition
 {
     ifstream infile;
     infile.open("infoRooms.txt");
@@ -622,7 +621,7 @@ bool check_room_status()
     else
         return false;
 }
-void add_rooms()
+void add_rooms()///function definition
 {
     ofstream infile("infoRooms.txt");
     vector<int> rooms;
@@ -657,7 +656,7 @@ void add_rooms()
                     cin >> type;
                 }
                 rooms.push_back(number);
-                infile << number << " " << type << endl;
+                infile << number << " " << type <<" "<< false << endl;
                 break;
             case 2:
                 m = false;
@@ -668,6 +667,49 @@ void add_rooms()
     }
     infile.close();
     rooms.clear();
+}
+bool check_availability(struct Room* Room_list,int wanted_room) ///function definition
+{
+    struct Room* last;
+    while (Room_list != NULL)
+    {
+        if (Room_list->room_number == wanted_room && !Room_list->reserved)
+            return true;
+        last = Room_list;
+        Room_list = Room_list->next;
+    }
+    return false;
+}
+void reserve_room(struct Room* Room_list,int wanted_room) ///function definition
+{
+    struct Room* last;
+    while (Room_list != NULL) {
+        if (Room_list->room_number == wanted_room && !Room_list->reserved)
+            Room_list->reserved = true;
+        last = Room_list;
+        Room_list = Room_list->next;
+    }
+}
+void log_update(struct Room* Room_list) ///function definition
+{
+    ofstream infile("infoRooms.txt",ofstream::trunc);
+    struct Room* last;
+    while (Room_list != NULL)
+    {
+        infile << Room_list->room_number << " " << Room_list->room_type << " " << Room_list->reserved << endl;
+        last = Room_list;
+        Room_list = Room_list->next;
+    }
+}
+Room* get_room(struct Room* head,int wanted_room) ///function definition
+{
+    struct Room* last;
+    while (head != NULL) {
+        if (head->room_number == wanted_room && head->reserved)
+            return head;
+        last = head;
+        head = head->next;
+    }
 }
 void about()
 {
