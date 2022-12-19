@@ -131,11 +131,9 @@ int main()
 			cout << " *                                 *" << endl;
 			cout << "** Welcome to the User Total Menu  **" << endl;
 			cout << " *                                 *" << endl;
-			cout << "**        Available Rooms:         **" << endl;
-			displayList(head);
 			cout << endl;
 			cout << endl;
-			user_total(head);    //function calling
+			user_total(head);   //function calling
 			break;
 		case 4:
 			cout << "               *                                 *" << endl;
@@ -208,7 +206,7 @@ void user_total(struct Room* head)   //funtion definition  of function user_tota
 {
 	int choice, days, total1 = 0;
 	Room* the_room;
-	char AC, again,choose;
+	char AC, again, choose;
 	int c = 1000;
 	int single = 3000;
 	int doubl = 4500;
@@ -217,6 +215,8 @@ void user_total(struct Room* head)   //funtion definition  of function user_tota
 	int service = 300;
 	do
 	{
+		cout << "**        Available Rooms:         **" << endl;
+		displayList(head);
 		cout << "What was the room number you stayed in?  " << endl << endl;
 		cin >> choice;
 		the_room = get_room(head, choice);
@@ -309,7 +309,7 @@ void user_total(struct Room* head)   //funtion definition  of function user_tota
 			cout << "you have enter an invalid Choice " << endl;
 			cout << endl;
 		}
-		cout << endl << "Are you interested in participating in a survey about the hotel and its services? (Y/N)"<<endl;
+		cout << endl << "Are you interested in participating in a survey about the hotel and its services? (Y/N)" << endl;
 		cin >> choose;
 		if (choose == 'Y' || choose == 'y') {
 			Survey();
@@ -318,8 +318,7 @@ void user_total(struct Room* head)   //funtion definition  of function user_tota
 		cin >> again;
 		cout << "___________________________________" << endl;
 		cout << endl;
-	}
-	while (again == 'y' || again == 'Y');
+	} while (again == 'y' || again == 'Y');
 
 }
 //....................................................................//
@@ -730,6 +729,7 @@ Room* get_room(struct Room* head, int wanted_room) ///function definition
 		last = head;
 		head = head->next;
 	}
+	return NULL;
 }
 int room_damages()
 {
@@ -767,71 +767,80 @@ void Survey() {
 		cout << "Error,can't open file." << endl;
 	}
 	cout << "Rate your satisfaction for the room you stayed in:" << endl;
-	cin >> Answer;
-	if (Answer > 5 || Answer < 1) {
-		cout << "you have entered an invalid choice" << endl << endl;
-		Survey();
-	}
+	file << "Rate your satisfaction for the room you stayed in:" << endl;
+	do {
+		cin >> Answer;
+		if (Answer > 5 || Answer < 1)
+			cout << "You have entered an invalid choice, Try again:" << endl;
+	} while (Answer > 5 || Answer < 1);
 	average += Answer;
-	file << "Your answer is :" << Answer;
+	file << "Your answer is :" << Answer << endl;;
 	cout << "Rate your satisfaction with the cleanliness and maintenance of the hotel:" << endl;
-	cin >> Answer;
-	if (Answer > 5 || Answer < 1) {
-		cout << "you have entered an invalid choice" << endl << endl;
-		Survey();
-	}
+	file << "Rate your satisfaction with the cleanliness and maintenance of the hotel:" << endl;
+	do {
+		cin >> Answer;
+		if (Answer > 5 || Answer < 1)
+			cout << "You have entered an invalid choice, Try again:" << endl;
+	} while (Answer > 5 || Answer < 1);
 	average += Answer;
-	file << "Your answer is :" << Answer;
+	file << "Your answer is :" << Answer<<endl;
 	cout << "To what extent were you satisfied with the attitude of the hotel staff towards you?" << endl;
-	cin >> Answer;
-	if (Answer > 5 || Answer < 1) {
-		cout << "you have entered an invalid choice" << endl << endl;
-		Survey();
-	}
+	file << "To what extent were you satisfied with the attitude of the hotel staff towards you?" << endl;
+	do {
+		cin >> Answer;
+		if (Answer > 5 || Answer < 1)
+			cout << "You have entered an invalid choice, Try again:" << endl;
+	} while (Answer > 5 || Answer < 1);
 	average += Answer;
-	file << "Your answer is :" << Answer;
+	file << "Your answer is :" << Answer<<endl;
 	cout << "Rate your satisfaction with the food that served at the hotel:" << endl;
-	cin >> Answer;
-	if (Answer > 5 || Answer < 1) {
-		cout << "you have entered an invalid choice" << endl << endl;
-		Survey();
-	}
+	file << "Rate your satisfaction with the food that served at the hotel:" << endl;
+	do {
+		cin >> Answer;
+		if (Answer > 5 || Answer < 1)
+			cout << "You have entered an invalid choice, Try again:" << endl;
+	} while (Answer > 5 || Answer < 1);
 	average += Answer;
-	file << "Your answer is :" << Answer;
+	file << "Your answer is :" << Answer<<endl;
 	cout << "Rate your satisfaction with the hotel room service:" << endl;
-	cin >> Answer;
-	if (Answer > 5 || Answer < 1) {
-		cout << "you have entered an invalid choice" << endl << endl;
-		Survey();
-	}
+	file << "Rate your satisfaction with the hotel room service:" << endl;
+	do {
+		cin >> Answer;
+		if (Answer > 5 || Answer < 1)
+			cout << "You have entered an invalid choice, Try again:" << endl;
+	} while (Answer > 5 || Answer < 1);
 	average += Answer;
-	file << "Your answer is :" << Answer;
+	file << "Your answer is :" << Answer<<endl;
 	cout << "Rate your satisfaction for the various areas of entertainment that the hotel offers:" << endl;
-	cin >> Answer;
-	if (Answer > 5 || Answer < 1) {
-		cout << "you have entered an invalid choice" << endl << endl;
-		Survey();
-	}
+	file << "Rate your satisfaction for the various areas of entertainment that the hotel offers:" << endl;
+	do {
+		cin >> Answer;
+		if (Answer > 5 || Answer < 1)
+			cout << "You have entered an invalid choice, Try again:" << endl;
+	} while (Answer > 5 || Answer < 1);
 	average += Answer;
-	file << "Your answer is :" << Answer;
+	file << "Your answer is :" << Answer << endl;
 	cout << "To what extent are you satisfied with the process of receiving and leaving the room?" << endl;
-	cin >> Answer;
-	if (Answer > 5 || Answer < 1) {
-		cout << "you have entered an invalid choice" << endl << endl;
-		Survey();
-	}
+	file << "To what extent are you satisfied with the process of receiving and leaving the room?" << endl;
+	do {
+		cin >> Answer;
+		if (Answer > 5 || Answer < 1)
+			cout << "You have entered an invalid choice, Try again:" << endl;
+	} while (Answer > 5 || Answer < 1);
 	average += Answer;
-	file << "Your answer is :" << Answer;
+	file << "Your answer is :" << Answer<<endl;
 	cout << "Rate in general your level of satisfaction with your stay at the hotel:" << endl;
-	cin >> Answer;
-	if (Answer > 5 || Answer < 1) {
-		cout << "you have entered an invalid choice" << endl << endl;
-		Survey();
-	}
+	file << "Rate in general your level of satisfaction with your stay at the hotel:" << endl;
+	do {
+		cin >> Answer;
+		if (Answer > 5 || Answer < 1)
+			cout << "You have entered an invalid choice, Try again:"<<endl;
+	} while (Answer > 5 || Answer < 1);
 	average += Answer;
-	file << "Your answer is :" << Answer;
+	file << "Your answer is :" << Answer<<endl;
 	cout << "Your average rating is " << average / 8 << "/5 stars." << endl << "Thank you for participating in the survey!" << endl << endl;
-	file << "Your average rating is " << average / 8;
+	file << "Your average rating is " << average / 8<<endl;
+	file << "-----------------------------------------------------------------------------------------------------------------" << endl;
 	file.close();
 	return;
 }
