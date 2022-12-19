@@ -43,6 +43,7 @@ using namespace std;
        void log_update(struct Room*); //updates the log when needed.
        Room* get_room(struct Room*, int); //get a specific room(node) from list when needed.
        int room_damages(); // calc room damages to user_total func
+       void extending(struct Room*);            //for extending
 
        
 //------------------------.>//
@@ -166,6 +167,19 @@ int main()
                 cout << endl;
                 cout << endl;
                 help();    //function calling
+                break;
+            case 8:
+                cout << "     *                     *" << endl;
+                cout << "   ** Welcome to the Extending stay time **" << endl;
+                cout << "      *                     *" << endl;
+                cout << endl;
+                cout << "First, you have to do a quick check-out for the old room" << endl;
+                cout << endl;
+                user_total(head);    //function calling
+                cout << "  **        Available rooms for extending:         **" << endl;
+                displayList(head);
+                cout << endl;
+                extending(head);    //function calling
                 break;
             default:
                 cout << "you have enter an invalid Choice " << endl;
@@ -777,5 +791,87 @@ void help()
              cout<<"thanks for be here\n";
              cout<<endl;
 }
+void extending(struct Room* head)
+{
+    Name guest;             // guest is the name structure
+    Name Manager;
+    bool check_res = false;
 
+
+    ofstream file;
+    file.open("User info input.txt", ios::out | ios::app);  //openning txt file 
+    if (!file)
+    {
+        cout << "Error: Cannot open file.\n";
+        system("pause");
+    }
+
+    cout << "Enter The Room number you want to extending your stay time in it: ";
+    do
+    {
+        cin >> guest.room;
+        check_res = check_availability(head, guest.room);
+        if (!check_res)
+        {
+            cout << "Please choose a different room since the one chosen is not available at the dates you wanted." << endl;
+            cout << "The staff will help you to move your staff\nPlease Enter a new number of room for extending your stay time" << endl;
+        }
+
+    } while (!check_res);
+    cin.ignore();
+    cout << endl;
+    cout << "Enter Guest's First Name: ";
+    cin.getline(guest.first, 20);
+    cout << endl;
+    cout << "Enter Guest's Last Name: ";
+    cin.getline(guest.last, 20);
+    cout << endl;
+    cout << "Enter The Mobile no. of The Guest: +";
+    cin.getline(guest.mob, 20);
+    cout << endl;
+    cout << "The Name of Manager in Charge: ";
+    cin.getline(Manager.first, 20);
+    cout << endl;
+    cout << endl;
+    cout << "Date: ";
+    cin.getline(guest.date, 20);
+    cout << endl;
+    int a;                            ///for choice
+    cout << "Press 1 to Save or 2 to cancel: ";
+    cout << endl;
+    cin >> a;
+    if (a == 1)
+    {
+        cout << endl;
+        file << " Guests Info" << endl;
+        cout << endl;
+        file << "------------------------------------------------------------" << endl;
+        file << endl;
+        file << "              Reservation Data of Room no.: " << guest.room << endl;
+        file << endl;
+        file << "The Name of the Guest is: " << guest.first << " " << guest.last << endl;
+        file << endl;
+        file << "Mobile No.: +" << guest.mob << endl;
+        file << endl;
+        file << "Name of Manager in Charge is: " << Manager.first << endl;
+        file << endl;
+        file << "Date: " << guest.date << endl;
+        file << endl;
+
+        file << endl;
+        file << "------------------------------------------------------------" << endl;
+        file.close();
+        reserve_room(head, guest.room);
+        cout << "Record Saved..." << endl;
+        cout << "__________________________________" << endl;
+        cout << endl;
+
+    }
+    else
+    {
+        cout << "Record Was Not Saved" << endl;
+        cout << "____________________________________" << endl;
+        cout << endl;
+    }
+}
 
