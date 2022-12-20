@@ -240,14 +240,14 @@ void user_total(struct Room* head)   //funtion definition  of function user_tota
 			cout << endl;
 			if (AC == 'Y' || AC == 'y')
 			{
-				total1 = (c + single + time + service) * days;
+				total1 += (c + single + time + service) * days;
 				cout << "Your Total Total bill + service tax = (" << total1 << " Rs.)" << endl;
 				cout << endl;
 				cout << "______________________________" << endl;
 			}
 			else if (AC == 'N' || AC == 'n')
 			{
-				total1 = (single + time + service) * days;
+				total1 += (single + time + service) * days;
 				cout << "Your Total Total bill + service tax = (" << total1 << " Rs.)" << endl;
 				cout << endl;
 				cout << "_______________________________" << endl;
@@ -266,14 +266,14 @@ void user_total(struct Room* head)   //funtion definition  of function user_tota
 
 			if (AC == 'Y' || AC == 'y')
 			{
-				total1 = (c + doubl + time + service) * days;
+				total1 += (c + doubl + time + service) * days;
 				cout << "Your Total Total bill + service tax = (" << total1 << " Rs.)" << endl;
 				cout << endl;
 				cout << "__________________________________" << endl;
 			}
 			else if (AC == 'N' || AC == 'n')
 			{
-				total1 = (doubl + time + service) * days;
+				total1 += (doubl + time + service) * days;
 				cout << "Your Total Total bill + service tax = (" << total1 << " Rs.)" << endl;
 				cout << endl;
 				cout << "_______________________________________" << endl;
@@ -291,14 +291,14 @@ void user_total(struct Room* head)   //funtion definition  of function user_tota
 			cout << endl;
 			if (AC == 'Y' || AC == 'y')
 			{
-				total1 = (c + suite + time + service) * days;
+				total1 += (c + suite + time + service) * days;
 				cout << "Your Total Total bill + service tax = (" << total1 << " Rs.)" << endl;
 				cout << endl;
 				cout << "_______________________________________" << endl;
 			}
 			else if (AC == 'N' || AC == 'n')
 			{
-				total1 = (suite + time + service) * days;
+				total1 += (suite + time + service) * days;
 				cout << "Your Total Total bill + service tax = (" << total1 << " Rs.)" << endl;
 
 				cout << endl;
